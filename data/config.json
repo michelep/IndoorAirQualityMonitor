@@ -1,1 +1,1 @@
-{"wifi_essid":"","wifi_password":"","hostname":"thaq-module","broker_host":"10.0.0.3","broker_port":1883,"client_id":"thaq-sensor","ntp_server":"time.ien.it","ntp_timezone":1,"syslog_server":"","syslog_port":514,"alarm_temp":30,"alarm_hum":90,"alarm_aq":1,"alarm_hdex":35}
+{"wifi_essid":"","wifi_password":"","hostname":"thaq-module","broker_host":"","broker_port":1883,"client_id":"thaq-sensor","ntp_server":"time.ien.it","ntp_timezone":1,"syslog_server":"","syslog_port":514,"alarm_temp":30,"alarm_hum":90,"alarm_aq":1,"alarm_hdex":35}

@@ -34,6 +34,10 @@
 // All of the IO pins have interrupt/pwm/I2C/one-wire support except D0.
 // All of the IO pins run at 3.3V.
 //
+// v0.1.1 - 13.10.2019
+// - added ota_enable to prevent accidental or unwanted OTA updates (true if OTA is enables, false otherwise)
+// - change MQTT messages
+//
 // v0.1.0 - 03.07.2019
 // - added alarm for temp, humidity, air quality and humixed indexes
 // - some minor fixes
@@ -118,7 +122,7 @@ bool syncEventTriggered = false; // True if a time even has been triggered
 // Firmware data
 const char BUILD[] = __DATE__ " " __TIME__;
 #define FW_NAME         "thaq-module"
-#define FW_VERSION      "0.0.6"
+#define FW_VERSION      "0.1.1"
 
 #define ANALOGPIN  A0 
 #define BUZZER 0 // D3
@@ -160,6 +164,7 @@ struct Config {
   unsigned int broker_port;
   char client_id[18];
   // Host config
+  bool ota_enable;
   char hostname[16];
   //
   int8_t alarm_t;
@@ -246,13 +251,6 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
 
 bool mqttPublish(char *topic, char *payload) {
   if (mqttClient.connected()) {
-    if(mqttClient.publish(topic,payload)) {
-      DEBUG("[MQTT] Publish "+String(topic)+":"+String(payload));
-      return true;
-    } else {
-      DEBUG("[MQTT] Publish failed!");
-      return false;
-    }
   }
 }
 
@@ -514,8 +512,10 @@ void ledLoop() {
 // loop routine
 // ************************************
 void loop() {
-  // Handle OTA
-  ArduinoOTA.handle();
+  if(config.ota_enable) {
+    // Handle OTA
+    ArduinoOTA.handle();
+  }
 
   // Scheduler
   runner.execute();
@@ -531,7 +531,7 @@ void loop() {
       Serial.printf("Stations connected to soft-AP = %d\n", WiFi.softAPgetStationNum());  
     } else {      
       if(isDataReady) {
-        char query[256];
+        char topic[32],value[16];
         if(WiFi.status() != WL_CONNECTED) {
           connectToWifi();
         }
@@ -539,10 +539,19 @@ void loop() {
         if (!mqttClient.connected()) {
           mqttConnect();
         }
-        // Send data!
-        serializeJson(ejson,query);
-        if(mqttPublish(config.client_id,query)) {
-          isDataReady=false;
+        ejson["uptime"] = millis() / 1000;
+
+        JsonObject root = ejson.as<JsonObject>();
+ 
+        for (JsonPair keyValue : root) {
+          sprintf(topic,"%s/%s",config.client_id,keyValue.key().c_str());
+          String value = keyValue.value().as<String>();
+          if(mqttClient.publish(topic,value.c_str())) {
+            DEBUG("[MQTT] Publish "+String(topic)+":"+value);
+            isDataReady=false;
+          } else {
+            DEBUG("[MQTT] Publish failed!");
+          }
         }
       }
     }

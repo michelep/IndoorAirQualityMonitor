@@ -33,6 +33,7 @@ bool loadConfigFile() {
       strlcpy(config.client_id, root["client_id"] | "thaq-sensor", sizeof(config.client_id));
       strlcpy(config.syslog_server, root["syslog_server"] | "", sizeof(config.syslog_server));
       config.syslog_port = root["syslog_port"] | 514;
+      config.ota_enable = root["ota_enable"] | true; // OTA updates enabled by default
       
       strlcpy(config.ntp_server, root["ntp_server"] | "time.ien.it", sizeof(config.ntp_server));
       config.ntp_timezone = root["ntp_timezone"] | 1;
@@ -63,6 +64,7 @@ bool saveConfigFile() {
   root["ntp_timezone"] = config.ntp_timezone;
   root["syslog_server"] = config.syslog_server;
   root["syslog_port"] = config.syslog_port;
+  root["ota_enable"] = config.ota_enable;
 
   root["alarm_temp"] = config.alarm_t;
   root["alarm_hum"] = config.alarm_h;

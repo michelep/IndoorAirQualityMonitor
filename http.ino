@@ -59,6 +59,13 @@ String templateProcessor(const String& var)
   if(var=="client_id") {
     return String(config.client_id);
   }  
+  if(var=="ota_enable") {
+    if(config.ota_enable) {
+      return String("checked");  
+    } else {
+      return String("");
+    }
+  }
   // Alarm values
   if(var=="alarm_temp") {
     return String(config.alarm_t);
@@ -113,6 +120,14 @@ void initWebServer() {
     if(request->hasParam("client_id", true)) {
         strcpy(config.client_id, request->getParam("client_id", true)->value().c_str());
     }    
+    if(request->hasParam("hostname", true)) {
+        strcpy(config.hostname, request->getParam("hostname", true)->value().c_str());
+    } 
+    if(request->hasParam("ota_enable", true)) {
+      config.ota_enable=true;        
+    } else {
+      config.ota_enable=false;
+    } 
     //
     if(request->hasParam("alarm_temp", true)) {
         config.alarm_t = atoi(request->getParam("alarm_temp", true)->value().c_str());

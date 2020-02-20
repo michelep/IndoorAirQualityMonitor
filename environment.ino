@@ -40,22 +40,22 @@ void envCallback() {
 
   temperature = bme.readTemperature();
   dtostrf(temperature, 5, 2, temp);
-  ejson["t"] = temperature;
+  ejson["temperature"] = temperature;
   DEBUG("BME280 Temperature: "+String(temp)+"C");
 
   humidity = bme.readHumidity();
   dtostrf(humidity, 5, 2, temp);
-  ejson["h"] = humidity;
+  ejson["humidity"] = humidity;
   DEBUG("BME280 Humidity: "+String(temp)+"%");
     
   pressure = bme.readPressure() / 100.0F;
   dtostrf(pressure, 5, 2, temp);
-  ejson["p"] = pressure;
+  ejson["pressure"] = pressure;
   DEBUG("BME280 Pressure: "+String(temp)+"hPA");
   
   altitude = bme.readAltitude(SEALEVELPRESSURE_HPA);
   dtostrf(altitude, 5, 2, temp);
-  ejson["alt"] = altitude,
+  ejson["altitude"] = altitude,
   DEBUG("BME280 Altitude: "+String(temp)+"mslm");
 
   // Calculate humidex
@@ -85,7 +85,7 @@ void envCallback() {
   }
   
   dtostrf(humidex, 5, 2, temp);
-  ejson["hdex"] = humidex;
+  ejson["humidex"] = humidex;
   DEBUG("Humidex index: "+String(temp));
 
   /* if MQ135 is warmed up... */
@@ -99,13 +99,13 @@ void envCallback() {
       Serial.println("[ERROR] Failed to read from MQ135 sensor!");
     } else {
       dtostrf(aq_ppm, 5, 2, temp);
-      ejson["aq"] = aq_ppm;
+      ejson["airquality"] = aq_ppm;
       DEBUG("[DEBUG] MQ135 PPM: "+String(temp));
     }
   }
   if(timeStatus() == timeSet) {
     time_t t = now();
-    ejson["ts"] = t; 
+    ejson["timestamp"] = t; 
   }
   isDataReady=true;
 }

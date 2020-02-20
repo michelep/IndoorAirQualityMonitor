@@ -142,9 +142,16 @@
 				    </div>
 				</div>
 				<div class="form-row">
-				    <label for="formHostName">Hostname</label>
-				    <input type="text" class="form-control" id="form_hostname" name="hostname" value="%hostname%" />
-				    <p class="text-muted">Set hostname</p>
+				    <div class="col-md-6">
+					<label for="formHostName">Hostname</label>
+					<input type="text" class="form-control" id="form_hostname" name="hostname" value="%hostname%" />
+					<p class="text-muted">Set hostname</p>
+				    </div>
+				    <div class="col-md-6">
+					<label for="formHostName">OTA enabled?</label>
+					<input type="checkbox" class="form-control" id="form_ota_enable" name="ota_enable" %ota_enable% />
+					<p class="text-muted">Updates On-The-Air enabled if checked </p>
+				    </div>
 				</div>
 				<div class="form-row">
 				    <div class="col-md-6">
