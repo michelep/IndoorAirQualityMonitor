@@ -1,7 +1,5 @@
 # Indoor Air Quality monitor
-#
-# A cheap and conveniente Indoor Air Quality Station
-## Based on ESP8266 plus a bunch of cheap sensors!
+## A cheap, simple and smart indoor air quality monitor based on ESP8266 and a buch of cheap sensor
 
 This is an Arduino SDK project to create an Indoor Air Quality monitor, with MQTT support. With a WeMos D1 mini (ESP8266) and a Bosch BME280 sensor, plus a MQ135 VOCs air detector and a bunch of other components, you can create a fully-featured air quality monitor for your home.
 
