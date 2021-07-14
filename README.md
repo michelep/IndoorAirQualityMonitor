@@ -11,6 +11,14 @@ It's a quite simple project, based on Wemos D1 Mini lite ESP8266 module (bought 
 
 and sent via MQTT to a broker or a gateway for storage and/or visualization (like Grafana).
 
+## Build it!
+
+Board building it's straight forward: just connect BME280 via I2S bus, MQ135 to A0 (via 180KOhm resistor) and an RGB common-anode LED (if you want fading light changing color based on humidex index - very nice but quite useless!) with related resistors.
+
+![Schema](https://github.com/michelep/IndoorAirQualityMonitor/raw/master/assets/schema.jpg)
+
+Then change configuration on config.json fitting your needs, compile and flash firmware and SPIFFS: that's all!
+
 ## Configuration
 
 All configurable items are in /data/config.json file, in JSON format. This directory need to be flashed to ESP8266's SPIFFS area. Moreover, you can change configuration via WEB GUI
