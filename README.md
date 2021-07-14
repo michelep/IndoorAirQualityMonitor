@@ -7,7 +7,7 @@ This is an Arduino SDK project to create an Indoor Air Quality monitor, with MQT
 
 It's a quite simple project, based on Wemos D1 Mini lite ESP8266 module (bought for few $ on Aliexpress) and Bosch BME280 temp/hum/pressure sensor. There's also a MQ135 VOCs sensor for CO2, buthane and other gasses. All data will be displayed via web:
 
-![IndoorAitQualityMonitor](https://raw.githubusercontent.com/michelep/IndoorAirQualityMonitor/master/images/webgui_1.jpg)
+![Web Gui](https://github.com/michelep/IndoorAirQualityMonitor/raw/master/assets/webgui_1.jpg)
 
 and sent via MQTT to a broker or a gateway for storage and/or visualization (like Grafana).
 
