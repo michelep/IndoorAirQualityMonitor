@@ -1,3 +1,5 @@
+# Indoor Air Quality monitor
+#
 # A cheap and conveniente Indoor Air Quality Station
 ## Based on ESP8266 plus a bunch of cheap sensors!
 
@@ -8,6 +10,12 @@ This is an Arduino SDK project to create an Indoor Air Quality monitor, with MQT
 All configurable items are in /data/config.json file, in JSON format. This directory need to be flashed to ESP8266's SPIFFS area.
 
 ## Changelog
+
+v0.2.0 - 12.07.2021
+- WEB GUI completely rewritten using purecss and self-hosted libs
+- MQTT re-engineered for better handling
+- Change NTP client library
+- More natural LED fading
 
 v0.1.1 - 13.10.2019
 - added ota_enable to prevent accidental or unwanted OTA updates (true if OTA is enables, false otherwise)

@@ -1,5 +1,8 @@
+// Indoor Air Quality monitor
+//
 // Written by Michele <o-zone@zerozone.it> Pinassi
 // Released under GPLv3 - No any warranty
+
 
 enum i2c_status   {I2C_WAITING,     // stopped states
                    I2C_TIMEOUT,     //  |
@@ -26,28 +29,4 @@ bool i2c_status() {
     default:           DEBUG("I2C busy\n"); break;
   }
   return false;
-}
-
-void i2c_scanner() {
-  byte error, address;
-  uint8_t nDevices = 0;
-  for(address = 1; address < 127; address++ ) {
-    Wire.beginTransmission(address);
-    error = Wire.endTransmission();
- 
-    if (error == 0)     {
-      Serial.print("I2C device found at address 0x");
-      if (address<16)
-        Serial.print("0");
-      Serial.print(address,HEX);
-      Serial.println("  !");
- 
-      nDevices++;
-    } else if (error==4) {
-      Serial.print("Unknown error at address 0x");
-      if (address<16)
-        Serial.print("0");
-      Serial.println(address,HEX);
-    }    
-  }
 }

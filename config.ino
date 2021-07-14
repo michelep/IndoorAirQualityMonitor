@@ -1,6 +1,4 @@
-// 
-// Temperature, Humidity and Air Quality 
-// with WeMOS D1 mini lite 
+// Indoor Air Quality monitor
 //
 // Written by Michele <o-zone@zerozone.it> Pinassi
 // Released under GPLv3 - No any warranty
@@ -30,17 +28,14 @@ bool loadConfigFile() {
       strlcpy(config.hostname, root["hostname"] | "thaq-sensor", sizeof(config.hostname));
       strlcpy(config.broker_host, root["broker_host"] | "", sizeof(config.broker_host));
       config.broker_port = root["broker_port"] | 1883;
+      config.broker_timeout = root["broker_timeout"] | 300; // 300 seconds default
       strlcpy(config.client_id, root["client_id"] | "thaq-sensor", sizeof(config.client_id));
-      strlcpy(config.syslog_server, root["syslog_server"] | "", sizeof(config.syslog_server));
-      config.syslog_port = root["syslog_port"] | 514;
       config.ota_enable = root["ota_enable"] | true; // OTA updates enabled by default
       
-      strlcpy(config.ntp_server, root["ntp_server"] | "time.ien.it", sizeof(config.ntp_server));
-      config.ntp_timezone = root["ntp_timezone"] | 1;
       //
-      config.alarm_t = root["alarm_temp"] | 0;
-      config.alarm_h = root["alarm_hum"] | 0;
-      config.alarm_aq = root["alarm_aq"] | 0;
+      config.alarm_temp = root["alarm_temp"] | 0;
+      config.alarm_hum = root["alarm_hum"] | 0;
+      config.alarm_vocs = root["alarm_vocs"] | 0;
       config.alarm_hdex = root["alarm_hdex"] | 0;
       //
       DEBUG("[INIT] Configuration loaded");
@@ -59,16 +54,13 @@ bool saveConfigFile() {
   root["hostname"] = config.hostname;
   root["broker_host"] = config.broker_host;
   root["broker_port"] = config.broker_port;
+  root["broker_timeout"] = config.broker_timeout;
   root["client_id"] = config.client_id;
-  root["ntp_server"] = config.ntp_server;
-  root["ntp_timezone"] = config.ntp_timezone;
-  root["syslog_server"] = config.syslog_server;
-  root["syslog_port"] = config.syslog_port;
   root["ota_enable"] = config.ota_enable;
 
-  root["alarm_temp"] = config.alarm_t;
-  root["alarm_hum"] = config.alarm_h;
-  root["alarm_aq"] = config.alarm_aq;
+  root["alarm_temp"] = config.alarm_temp;
+  root["alarm_hum"] = config.alarm_hum;
+  root["alarm_vocs"] = config.alarm_vocs;
   root["alarm_hdex"] = config.alarm_hdex;
   
   configFile = SPIFFS.open(CONFIG_FILE, "w");

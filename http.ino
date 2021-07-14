@@ -1,10 +1,7 @@
-// THAQ Station 
-// Temperature, Humidity and Pressure
-// with Lolin ESP8266
+// Indoor Air Quality monitor
 //
 // Written by Michele <o-zone@zerozone.it> Pinassi
 // Released under GPLv3 - No any warranty
-
 
 String templateProcessor(const String& var)
 {
@@ -24,7 +21,7 @@ String templateProcessor(const String& var)
     return String(millis()/1000);
   }
   if(var=="timedate") {
-    return NTP.getTimeDateString();
+    return String(timeClient.getFormattedTime());
   }
   //
   // Config values
@@ -38,23 +35,14 @@ String templateProcessor(const String& var)
   if(var=="wifi_rssi") {
     return String(WiFi.RSSI());
   }
-  if(var=="ntp_server") {
-    return String(config.ntp_server);
-  }
-  if(var=="ntp_timezone") {
-    return String(config.ntp_timezone);
-  }
-  if(var=="syslog_server") {
-    return String(config.syslog_server);
-  }
-  if(var=="syslog_port") {
-    return String(config.syslog_port);
-  }
   if(var=="broker_host") {
     return String(config.broker_host);
   }
   if(var=="broker_port") {
     return String(config.broker_port);
+  }
+  if(var=="broker_timeout") {
+    return String(config.broker_timeout);
   }
   if(var=="client_id") {
     return String(config.client_id);
@@ -68,13 +56,13 @@ String templateProcessor(const String& var)
   }
   // Alarm values
   if(var=="alarm_temp") {
-    return String(config.alarm_t);
+    return String(config.alarm_temp);
   }
    if(var=="alarm_hum") {
-    return String(config.alarm_h);
+    return String(config.alarm_hum);
   }
-  if(var=="alarm_aq") {
-    return String(config.alarm_aq);
+  if(var=="alarm_vocs") {
+    return String(config.alarm_vocs);
   }
   if(var=="alarm_hdex") {
     return String(config.alarm_hdex);
@@ -99,23 +87,14 @@ void initWebServer() {
     if(request->hasParam("wifi_password", true)) {
         strcpy(config.wifi_password,request->getParam("wifi_password", true)->value().c_str());
     }
-    if(request->hasParam("ntp_server", true)) {
-        strcpy(config.ntp_server, request->getParam("ntp_server", true)->value().c_str());
-    }
-    if(request->hasParam("ntp_timezone", true)) {
-        config.ntp_timezone = atoi(request->getParam("ntp_timezone", true)->value().c_str());
-    }
-    if(request->hasParam("syslog_server", true)) {
-        strcpy(config.syslog_server,request->getParam("syslog_server", true)->value().c_str());
-    }
-    if(request->hasParam("syslog_port", true)) {
-        config.syslog_port = atoi(request->getParam("syslog_port", true)->value().c_str());
-    }
     if(request->hasParam("broker_host", true)) {
         strcpy(config.broker_host,request->getParam("broker_host", true)->value().c_str());
     }
     if(request->hasParam("broker_port", true)) {
         config.broker_port = atoi(request->getParam("broker_port", true)->value().c_str());
+    }
+    if(request->hasParam("broker_timeout", true)) {
+        config.broker_timeout = atoi(request->getParam("broker_timeout", true)->value().c_str());
     }
     if(request->hasParam("client_id", true)) {
         strcpy(config.client_id, request->getParam("client_id", true)->value().c_str());
@@ -130,13 +109,13 @@ void initWebServer() {
     } 
     //
     if(request->hasParam("alarm_temp", true)) {
-        config.alarm_t = atoi(request->getParam("alarm_temp", true)->value().c_str());
+        config.alarm_temp = atoi(request->getParam("alarm_temp", true)->value().c_str());
     }     
     if(request->hasParam("alarm_hum", true)) {
-        config.alarm_h = atoi(request->getParam("alarm_hum", true)->value().c_str());
+        config.alarm_hum = atoi(request->getParam("alarm_hum", true)->value().c_str());
     }     
-    if(request->hasParam("alarm_aq", true)) {
-        config.alarm_aq = atoi(request->getParam("alarm_aq", true)->value().c_str());
+    if(request->hasParam("alarm_vocs", true)) {
+        config.alarm_vocs = atoi(request->getParam("alarm_vocs", true)->value().c_str());
     }     
     if(request->hasParam("alarm_hdex", true)) {
         config.alarm_hdex = atoi(request->getParam("alarm_hdex", true)->value().c_str());
@@ -149,85 +128,24 @@ void initWebServer() {
   server.on("/restart", HTTP_POST, [](AsyncWebServerRequest *request) {
     ESP.restart();
   });
-  
+
   server.on("/ajax", HTTP_POST, [] (AsyncWebServerRequest *request) {
-    String action,value,response="";
+    String action,response="";
+    char outputJson[256];
 
     if (request->hasParam("action", true)) {
       action = request->getParam("action", true)->value();
-      Serial.print("ACTION: ");
-      if(action.equals("get")) {
-        value = request->getParam("value", true)->value();
-        Serial.println(value);
-        if(value.equals("temp")) {
-          response = String(temperature);
-        }
-        if(value.equals("humidity")) {
-          response = String(humidity);
-        }
-        if(value.equals("pressure")) {
-          response = String(pressure);
-        }
-        if(value.equals("co2")) {
-          response = String(aq_ppm);
-        }
-        if(value.equals("humidex")) {
-          response = String(humidex);
-        }
-        if(value.equals("altitude")) {
-          response = String(altitude);
-        }
-        if(value.equals("status")) {
-          response = system_status;
-        }
+      if(action.equals("env")) {
+        serializeJson(env,outputJson);
+        response = String(outputJson);
       }
     }
     request->send(200, "text/plain", response);
   });
-
+  
   server.onNotFound([](AsyncWebServerRequest *request) {
     Serial.printf("NOT_FOUND: ");
-    if(request->method() == HTTP_GET)
-      Serial.printf("GET");
-    else if(request->method() == HTTP_POST)
-      Serial.printf("POST");
-    else if(request->method() == HTTP_DELETE)
-      Serial.printf("DELETE");
-    else if(request->method() == HTTP_PUT)
-      Serial.printf("PUT");
-    else if(request->method() == HTTP_PATCH)
-      Serial.printf("PATCH");
-    else if(request->method() == HTTP_HEAD)
-      Serial.printf("HEAD");
-    else if(request->method() == HTTP_OPTIONS)
-      Serial.printf("OPTIONS");
-    else
-      Serial.printf("UNKNOWN");
     Serial.printf(" http://%s%s\n", request->host().c_str(), request->url().c_str());
-
-    if(request->contentLength()){
-      Serial.printf("_CONTENT_TYPE: %s\n", request->contentType().c_str());
-      Serial.printf("_CONTENT_LENGTH: %u\n", request->contentLength());
-    }
-
-    int headers = request->headers();
-    int i;
-    for(i=0;i<headers;i++){
-      AsyncWebHeader* h = request->getHeader(i);
-      Serial.printf("_HEADER[%s]: %s\n", h->name().c_str(), h->value().c_str());
-    }
-
-    int params = request->params();
-    for(i=0;i<params;i++){
-      AsyncWebParameter* p = request->getParam(i);
-      if(p->isFile()){
-        Serial.printf("_FILE[%s]: %s, size: %u\n", p->name().c_str(), p->value().c_str(), p->size());
-      } else if(p->isPost()){
-        Serial.printf("_POST[%s]: %s\n", p->name().c_str(), p->value().c_str());
-      } else {
-        Serial.printf("_GET[%s]: %s\n", p->name().c_str(), p->value().c_str());
-      }
-    }
 
     request->send(404);
   });

@@ -1,8 +1,4 @@
-// 
-// Temperature, Humidity and Air Quality 
-// with WeMOS D1 mini lite 
-// DHT11/21/22
-// MQ135
+// Indoor Air Quality monitor
 //
 // Written by Michele <o-zone@zerozone.it> Pinassi
 // Released under GPLv3 - No any warranty
@@ -40,22 +36,22 @@ void envCallback() {
 
   temperature = bme.readTemperature();
   dtostrf(temperature, 5, 2, temp);
-  ejson["temperature"] = temperature;
+  env["temperature"] = temperature;
   DEBUG("BME280 Temperature: "+String(temp)+"C");
 
   humidity = bme.readHumidity();
   dtostrf(humidity, 5, 2, temp);
-  ejson["humidity"] = humidity;
+  env["humidity"] = humidity;  
   DEBUG("BME280 Humidity: "+String(temp)+"%");
     
   pressure = bme.readPressure() / 100.0F;
   dtostrf(pressure, 5, 2, temp);
-  ejson["pressure"] = pressure;
+  env["pressure"] = pressure;
   DEBUG("BME280 Pressure: "+String(temp)+"hPA");
   
   altitude = bme.readAltitude(SEALEVELPRESSURE_HPA);
   dtostrf(altitude, 5, 2, temp);
-  ejson["altitude"] = altitude,
+  env["altitude"] = altitude;
   DEBUG("BME280 Altitude: "+String(temp)+"mslm");
 
   // Calculate humidex
@@ -63,29 +59,29 @@ void envCallback() {
     
   if ((humidex >= 21 )&&(humidex < 27)) {
   // Good
-    setLed(0,1023,1023);      
+    setLed(0,100,100);      
   } // dark green
   if ((humidex >= 27 )&&(humidex < 35)) {
     // Quite good
-    setLed(500,1023,0);
+    setLed(50,100,0);
   }
   if ((humidex >= 35 )&&(humidex < 40)) {
     // Not good
-    setLed(1023,1023,51);
+    setLed(100,100,5);
   } 
   if ((humidex >= 40 )&&(humidex < 46)) {
     // Health risk
-    setLed(1023,400,0);
+    setLed(100,40,0);
   }
   if ((humidex >= 46 )&&(humidex < 54)) {
-    setLed(1023,200,0);
+    setLed(100,20,0);
   } 
   if ((humidex >= 54 )) {
-    setLed(1023,0,0);
+    setLed(100,0,0);
   }
   
   dtostrf(humidex, 5, 2, temp);
-  ejson["humidex"] = humidex;
+  env["humidex"] = humidex;
   DEBUG("Humidex index: "+String(temp));
 
   /* if MQ135 is warmed up... */
@@ -93,19 +89,18 @@ void envCallback() {
     rzero = mq135.getCorrectedRZero(temperature,humidity);
     DEBUG("[DEBUG] CO2 RZero: "+String(rzero));
 
-    aq_ppm = mq135.getCorrectedPPM(temperature,humidity);
+    vocs = mq135.getCorrectedPPM(temperature,humidity);
 
-    if(isnan(aq_ppm)) {
+    if(isnan(vocs)) {
       Serial.println("[ERROR] Failed to read from MQ135 sensor!");
     } else {
-      dtostrf(aq_ppm, 5, 2, temp);
-      ejson["airquality"] = aq_ppm;
-      DEBUG("[DEBUG] MQ135 PPM: "+String(temp));
+      dtostrf(vocs, 5, 2, temp);
+      env["vocs"] = vocs;
+      DEBUG("[DEBUG] MQ135 VOCs PPM: "+String(temp));
     }
   }
-  if(timeStatus() == timeSet) {
-    time_t t = now();
-    ejson["timestamp"] = t; 
-  }
+
+  env["timestamp"] = timeClient.getFormattedTime();
+
   isDataReady=true;
 }

@@ -1,0 +1,160 @@
+<!doctype html>
+<html>
+    <head>
+	<meta charset="utf-8" />
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+	<meta name="description" content="Energy Meter" />
+        <meta name="author" content="Michele <o-zone@zerozone.it> Pinassi" />
+	<title>Indoor Air Quality - %hostname%</title>
+	<link rel="stylesheet" href="/pure-min.css">
+	<link rel="stylesheet" href="/grids-responsive-min.css">
+	<link rel="stylesheet" href="/styles.css">
+	<script src="/jquery-3.5.1.min.js"></script>
+    </head>
+    <body>
+	<div id="layout" class="pure-g">
+	    <div class="sidebar pure-u-1 pure-u-md-1-4">
+    		<div class="header">
+        	    <h1 class="brand-title">Indoor Air Quality</h1>
+		    <div>&nbsp;</div>
+        	    <h2 class="brand-tagline"><b>Smart wifi air quality monitor</b><br/>
+			v%fw_version%
+		    </h2>
+		</div>
+	    </div>
+        </div>
+	<div class="content pure-u-1 pure-u-md-3-4">
+    	    <div>
+    		<div class="posts">
+            	    <section class="post">
+        		<div class="post-desctiption status-bar" id="status">
+			    <img src="loader.gif">
+			</div>
+		    </section>
+		</div>
+    		<div class="posts">
+            	    <section class="post">
+                	<header class="post-header">
+                    	    <h2 class="post-title">BOARD CONFIGURATION</h2>
+                	</header>
+                	<div class="post-description">
+			    <form method="POST" action="/post" class="pure-form pure-form-stacked">
+				<fieldset>
+				    <legend>Alarms</legend>
+			    	    <div class="pure-g">
+        			        <div class="pure-u-1 pure-u-md-1-4">
+					    <label for="alarm_temp">Temperature</label>
+            				    <input type="number" id="alarm_temp" name="alarm_temp" class="pure-u-23-24" value="%alarm_temp%" min="1" max="99" />
+    					</div>
+        			        <div class="pure-u-1 pure-u-md-1-4">
+					    <label for="alarm_hum">Humidity</label>
+            				    <input type="number" id="alarm_hum" name="alarm_hum" class="pure-u-23-24" value="%alarm_hum%" min="1" max="99" />
+    					</div>
+        			        <div class="pure-u-1 pure-u-md-1-4">
+					    <label for="alarm_hum">VOCs</label>
+            				    <input type="number" id="alarm_vocs" name="alarm_vocs" class="pure-u-23-24" value="%alarm_vocs%" min="1" max="99" />
+    					</div>
+        			        <div class="pure-u-1 pure-u-md-1-4">
+					    <label for="alarm_hdex">Humidex</label>
+            				    <input type="number" id="alarm_hdex" name="alarm_hdex" class="pure-u-23-24" value="%alarm_hdex%" min="1" max="99" />
+    					</div>
+				    </div>
+				    <legend>WiFi and MQTT configuration</legend>
+			    	    <div class="pure-g">
+        			        <div class="pure-u-1 pure-u-md-1-3">
+					    <label for="wifi_essid">SSID</label>
+            				    <input type="text" id="wifi_essid" name="wifi_essid" class="pure-u-23-24" value="%wifi_essid%" required />
+    					</div><div class="pure-u-1 pure-u-md-1-3">
+					    <label for="wifi_password">PSK Key</label>
+        				    <input type="password" id="wifi_password" name="wifi_password" class="pure-u-23-24" value="%wifi_password%"/>
+			        	</div>
+        				<div class="pure-u-1 pure-u-md-1-3">
+            				    <label>WiFi Signal Power</label>
+					    <p>%wifi_rssi% db</p>
+        				</div>
+        			    </div>
+        			    <div class="pure_g">
+        			        <div class="pure-u-1 pure-u-md-1-4">
+					    <label for="broker_host">MQTT broker host</label>
+            				    <input type="text" id="broker_host" name="broker_host" class="pure-u-23-24" value="%broker_host%"/>
+    					</div><div class="pure-u-1 pure-u-md-1-4">
+					    <label for="broker_port">MQTT broker port</label>
+        				    <input type="number" id="broker_port" name="broker_port" class="pure-u-23-24" value="%broker_port%"/>
+			        	</div><div class="pure-u-1 pure-u-md-1-4">
+					    <label for="client_id">MQTT client ID</label>
+        				    <input type="text" id="client_id" name="client_id" class="pure-u-23-24" value="%client_id%"/>
+			        	</div><div class="pure-u-1 pure-u-md-1-4">
+					    <label for="client_id">MQTT Timeout</label>
+        				    <input type="number" id="broker_tout" min="30" max="3000" name="broker_timeout" class="pure-u-23-24" value="%broker_timeout%"/>
+			        	</div>
+        			    </div>
+				</fieldset><fieldset>
+				    <legend>System configuration</legend>
+			    	    <div class="pure-g">
+        			        <div class="pure-u-1 pure-u-md-1-4">
+					    <label for="hostname">Hostname</label>
+            				    <input type="text" id="hostname" name="hostname" class="pure-u-23-24" value="%hostname%" required />
+    					</div><div class="pure-u-1 pure-u-md-1-4">
+					    <label>Board datetime is</label>
+					    <p>%timedate%</p>
+			        	</div>
+				    </div>
+			    	    <div class="pure-g">
+        			        <div class="pure-u-1 pure-u-md-1-3">
+					    <label for="admin_username">Username</label>
+            				    <input type="text" id="admin_username" name="admin_username" class="pure-u-23-24" value="%admin_username%"/>
+    					</div><div class="pure-u-1 pure-u-md-1-3">
+					    <label for="admin_password">Password</label>
+        				    <input type="text" id="admin_password" name="admin_password" class="pure-u-23-24" value="%admin_password%"/>
+    					</div><div class="pure-u-1 pure-u-md-1-3">
+					    <label for="form-ota">OTA updates</label>
+					    <input type="checkbox" class="form-control" id="form_ota" name="ota_enable" checked="%ota_enable%" />
+					</div>
+				    </div>
+				</fieldset>
+				<div class="pure-button-group" role="group" aria-label="Configuration">
+			    	    <button type="submit" class="pure-button button-success">SAVE</button>
+			    	    <a href="/" type="button" class="pure-button pure-button-primary">CANCEL</a>
+			    	    <a href="/config.json" type="button" class="pure-button pure-button-primary">Config export</a>
+			    	    <a href="/restart" type="button" class="pure-button button-warning">! Restart !</a>
+				</div>
+			    </form>
+                	</div>
+            	    </section>
+        	</div>
+        	<div class="footer">
+            	    <div class="pure-menu pure-menu-horizontal">
+			<small>Made with &hearts; by Michele "O-Zone" Pinassi in Siena, Italy</small>
+                	<ul>
+                    	    <li class="pure-menu-item"><a href="https://www.zerozone.it" class="pure-menu-link">&#9900; blog on zerozone.it</a></li>
+                    	    <li class="pure-menu-item"><a href="https://github.com/michelep/" class="pure-menu-link">&#9900; code on Github</a></li>
+                    	    <li class="pure-menu-item"><a href="https://twitter.com/michele_pinassi" class="pure-menu-link">&#9900; follow me on Twitter</a></li>
+                	</ul>
+            	    </div>
+        	</div>
+    	    </div>
+	</div>
+	<script>
+function ajaxCall(action, value) {
+    $.ajax({
+	url: 'ajax',
+        type: 'post',
+	data: { action: "env" },
+	dataType: 'json',
+	timeout : 1000,
+    }).fail(function(xhr, text, error) {
+	$('#status').html('FAILED ('+error+'): device is connected?');
+    }).done(function(data) {
+	$('#status').html(data.status);
+    });
+    setTimeout(ajaxCall, 2000);
+    return false;
+}
+
+$(document).ready(function(){
+    ajaxCall();
+});
+	</script>
+    </body>
+</html>

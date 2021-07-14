@@ -4,246 +4,143 @@
 	<meta charset="utf-8" />
 	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-	<meta name="description" content="Indoor Air Quality monitor" />
+	<meta name="description" content="Energy Meter" />
         <meta name="author" content="Michele <o-zone@zerozone.it> Pinassi" />
-	<title>Air Quality Station</title>
-	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous" />
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+	<title>Indoor Air Quality - %hostname%</title>
+	<link rel="stylesheet" href="/pure-min.css">
+	<link rel="stylesheet" href="/grids-responsive-min.css">
+	<link rel="stylesheet" href="/styles.css">
+	<script src="/jquery-3.5.1.min.js"></script>
     </head>
     <body>
-	<div class="container">
-	    <center><div id="result">&nbsp;</div></center>
-	    <h1 class="mt-5">Indoor Air Quality Station</h1>
-	    <h5>%hostname%</h5>
-	    <div class="alert alert-info" id="status_field" role="alert">System status is loading...</div>
-	    <div class="card-deck"><!-- CARD DECK A -->
-		<div class="card bg-light mb-4">
-		    <div class="card-header">
-			<h2 class="card-header-title">Temperature</h2>
-		    </div>
-		    <div class="card-body text-center">
-			<h2 id="temp_field"><img src="/loader.gif" /></h2>
-		    </div>
-		</div>
-		<div class="card bg-light mb-4">
-		    <div class="card-header">
-			<h2 class="card-header-title">Humidity</h2>
-		    </div>
-		    <div class="card-body text-center">
-			<h2 id="hum_field"><img src="/loader.gif" /></h2>
-		    </div>
-		</div>
-		<div class="card bg-light mb-4">
-		    <div class="card-header">
-			<h2 class="card-header-title">Pressure</h2>
-		    </div>
-		    <div class="card-body text-center">
-			<h2 id="pres_field"><img src="/loader.gif" /></h2>
-		    </div>
+	<div id="layout" class="pure-g">
+	    <div class="sidebar pure-u-1 pure-u-md-1-4">
+    		<div class="header">
+        	    <h1 class="brand-title">Indoor Air Quality</h1>
+		    <div>&nbsp;</div>
+        	    <h2 class="brand-tagline"><b>Smart wifi air quality monitor</b><br/>
+			v%fw_version%
+		    </h2>
 		</div>
 	    </div>
-	    <div class="card-deck"><!-- CARD DECK B -->
-		<div class="card bg-light mb-4">
-		    <div class="card-header">
-			<h2 class="card-header-title">Altitude</h2>
-		    </div>
-		    <div class="card-body text-center">
-			<h2 id="alt_field"><img src="/loader.gif" /></h2>
-		    </div>
-		</div>
-		<div class="card bg-light mb-4">
-		    <div class="card-header">
-			<h2 class="card-header-title">CO2</h2>
-		    </div>
-		    <div class="card-body text-center">
-			<h2 id="co2_field"><img src="/loader.gif" /></h2>
-		    </div>
-		</div>
-		<div class="card bg-light mb-4">
-		    <div class="card-header">
-			<h2 class="card-header-title">Humidex</h2>
-		    </div>
-		    <div class="card-body text-center">
-			<h2 id="humidex_field"><img src="/loader.gif" /></h2>
-		    </div>
-		</div>
-	    </div><!-- /CARD DECK B -->
-	    <div class="accordion" id="alarmSection"><!-- ALARM -->
-		<div class="card"><!-- CONFIG -->
-		    <div class="card-header" id="headingAlarm">
-			<h5 class="mb-0">
-		    	    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseAlarm" aria-expanded="true" aria-controls="collapseAlarm">
-		    	        Alarms
-			    </button>
-			</h5>
-		    </div>
-		    <div class="collapse" id="collapseAlarm" aria-labelledby="headingAlarm" data-parent="#alarmSection">
-			<div class="card-body">
-			    <form class="form" method="POST" action="/post">
-				<input type="hidden" name="action" value="alarm">
-				<div class="form-row">
-				    <div class="col-md-3">
-		    			<label for="form_alarm_temp">Temp</label>
-		    			<input type="text" class="form-control" id="form_alarm_temp" name="alarm_temp" value="%alarm_temp%" />
-		    			<p class="text-muted">Temp trigger</p>
-				    </div>
-				    <div class="col-md-3">
-		    			<label for="form_alarm_hum">Hum</label>
-		    			<input type="text" class="form-control" id="form_alarm_hum" name="alarm_hum" value="%alarm_hum%" />
-		    			<p class="text-muted">Humidity trigger</p>
-				    </div>
-				    <div class="col-md-3">
-		    			<label for="form_alarm_aq">AirQ</label>
-		    			<input type="text" class="form-control" id="form_alarm_aq" name="alarm_aq" value="%alarm_aq%" />
-		    			<p class="text-muted">Air Quality trigger</p>
-				    </div>
-				    <div class="col-md-3">
-		    			<label for="form_alarm_hdex">Hdex</label>
-		    			<input type="text" class="form-control" id="form_alarm_hdex" name="alarm_hdex" value="%alarm_hdex%" />
-		    			<p class="text-muted">Humidex trigger</p>
-				    </div>
-				</div>
-				<input type="submit" class="btn btn-info" value="Save" />
-			    </form>
+        </div>
+	<div class="content pure-u-1 pure-u-md-3-4">
+    	    <div>
+    		<div class="posts">
+            	    <section class="post">
+        		<div class="post-desctiption status-bar" id="status">
+			    <img src="loader.gif">
 			</div>
-		    </div>
+		    </section>
 		</div>
-	    </div>
-	    <div class="accordion" id="configSection"><!-- CONFIGURATION -->
-		<div class="card"><!-- CONFIG -->
-		    <div class="card-header" id="headingManual">
-			<h5 class="mb-0">
-		    	    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseConfig" aria-expanded="true" aria-controls="collapseConfig">
-		    	        Configuration
-			    </button>
-			</h5>
+    		<div class="posts">
+		    <div class="pure-g">
+    			<div class="pure-u-1 pure-u-md-1-3">
+        		    <div class="rt-table">
+            			<div class="rt-table-header" style="background:#006d77">
+                		    <h2>Temperature</h2>
+				</div>
+                		<div class="rt-table-body" id="rt-temperature">
+				    <img src="loader.gif">
+                		</div>
+        		    </div>
+    			</div>
+    			<div class="pure-u-1 pure-u-md-1-3">
+        		    <div class="rt-table">
+            			<div class="rt-table-header" style="background:#d62828">
+                		    <h2>Humidity</h2>
+            			</div>
+                		<div class="rt-table-body" id="rt-humidity">
+				    <img src="loader.gif">
+                		</div>
+        		    </div>
+    			</div>
+    			<div class="pure-u-1 pure-u-md-1-3">
+        		    <div class="rt-table">
+            			<div class="rt-table-header" style="background:#f3722c">
+                		    <h2>Pressure</h2>
+            			</div>
+                		<div class="rt-table-body" id="rt-pressure">
+				    <img src="loader.gif">
+                		</div>
+        		    </div>
+    			</div>
+		    </div><div class="pure-g">
+    			<div class="pure-u-1 pure-u-md-1-3">
+        		    <div class="rt-table">
+            			<div class="rt-table-header" style="background:#CACFD6">
+                		    <h2>Altitude</h2>
+            			</div>
+                		<div class="rt-table-body" id="rt-altitude">
+				    <img src="loader.gif">
+                		</div>
+        		    </div>
+    			</div>
+    			<div class="pure-u-1 pure-u-md-1-3">
+        		    <div class="rt-table">
+            			<div class="rt-table-header" style="background:#43aa8b">
+                		    <h2>VOCs</h2>
+            			</div>
+                		<div class="rt-table-body" id="rt-vocs">
+				    <img src="loader.gif">
+                		</div>
+        		    </div>
+    			</div>
+    			<div class="pure-u-1 pure-u-md-1-3">
+        		    <div class="rt-table">
+            			<div class="rt-table-header" style="background:#8E7DBE">
+                		    <h2>Humidex</h2>
+            			</div>
+                		<div class="rt-table-body" id="rt-humidex">
+				    <img src="loader.gif">
+                		</div>
+        		    </div>
+    			</div>
 		    </div>
-		    <div class="collapse" id="collapseConfig" aria-labelledby="headingManual" data-parent="#configSection">
-			<div class="card-body">
-			    <form class="form" method="POST" action="/post">
-				<input type="hidden" name="action" value="config">
-				<div class="form-row">
-				    <div class="col-md-4">
-    		    			<label for="formAuthUser">Wifi ESSID</label>
-		    			<input type="text" class="form-control" id="form_wifi_essid" name="wifi_essid" value="%wifi_essid%" />
-		    			<p class="text-muted">Set your Wifi network name</p>
-				    </div>
-				    <div class="col-md-4">
-		    			<label for="formAuthPass">Wifi PSK</label>
-		    			<input type="text" class="form-control" id="form_wifi_password" name="wifi_password" value="%wifi_password%" />
-		    			<p class="text-muted">Your wifi password</p>
-				    </div>
-				    <div class="col-md-4">
-		    			<p>WiFi signal strenght (RSSI):</p>
-					<p><b>%wifi_rssi%</b> dBm</p>
-		    			<p class="text-muted">0-30dBm=Very Good, 31-50dBm=Good, 51-67dBm=Fair, 67-80dBm=Poor, >80dBm=Unstable</p>
-				    </div>
-				</div>
-				<div class="form-row">
-				    <div class="col-md-6">
-					<label for="formHostName">Hostname</label>
-					<input type="text" class="form-control" id="form_hostname" name="hostname" value="%hostname%" />
-					<p class="text-muted">Set hostname</p>
-				    </div>
-				    <div class="col-md-6">
-					<label for="formHostName">OTA enabled?</label>
-					<input type="checkbox" class="form-control" id="form_ota_enable" name="ota_enable" %ota_enable% />
-					<p class="text-muted">Updates On-The-Air enabled if checked </p>
-				    </div>
-				</div>
-				<div class="form-row">
-				    <div class="col-md-6">
-					<label for="formNTPServer">NTP server</label>
-					<input type="text" class="form-control" id="form_ntp_server" name="ntp_server" value="%ntp_server%" />
-					<p class="text-muted">NTP server</p>
-				    </div>
-				    <div class="col-md-6">
-					<label for="formNTPTimeZone">NTP time zone</label>
-					<input type="text" class="form-control" id="form_ntp_timezone" name="ntp_timezone" value="%ntp_timezone%" />
-					<p class="text-muted">NTP time zone</p>
-				    </div>
-				</div>
-				<div class="form-row">
-				    <div class="col-md-4">
-    		    			<label for="formMQTThost">MQTT broker host</label>
-		    			<input type="text" class="form-control" id="form_broker_host" name="broker_host" value="%broker_host%" />
-		    			<p class="text-muted">Set MQTT broker hostname (blank to disable)</p>
-				    </div>
-				    <div class="col-md-4">
-		    			<label for="formMQTTport">MQTT broker port</label>
-		    			<input type="text" class="form-control" id="form_broker_port" name="broker_port" value="%broker_port%" />
-		    			<p class="text-muted">MQTT Broker port</p>
-				    </div>
-				    <div class="col-md-4">
-		    			<label for="formMQTTid">MQTT client-id</label>
-		    			<input type="text" class="form-control" id="form_client_id" name="client_id" value="%client_id%" />
-		    			<p class="text-muted">MQTT client ID</p>
-				    </div>
-				</div>
-				<div class="form-row">
-				    <div class="col-md-6">
-    		    			<label for="formSyslogServer">Syslog server</label>
-		    			<input type="text" class="form-control" id="form_syslog_server" name="syslog_server" value="%syslog_server%" />
-		    			<p class="text-muted">Syslog server (blank to disable)</p>
-				    </div>
-				    <div class="col-md-6">
-		    			<label for="formAuthPass">Syslog port</label>
-		    			<input type="text" class="form-control" id="form_syslog_port" name="syslog_port" value="%syslog_port%" />
-		    			<p class="text-muted">Syslog port (default 514)</p>
-				    </div>
-				</div>
-				<input type="submit" class="btn btn-info" value="Save" /> or <a href="/config.json" class="btn btn-xs btn-info">Backup config</a>
-			    </form>
-			    <form class="form" method="POST" action="/restart">
-				<input type="hidden" name="action" value="restart">
-				<input type="submit" class="btn btn-warning" value="Restart" />
-			    </form>
-			</div>
-		    </div>
-		</div><!-- /CONFIG -->
-	    </div>
-	</div>
-	<div class="container">
-	    <p class="text-muted">Firmware %fw_name% %fw_version% - Uptime %uptime% secs - %timedate%</p>
+        	</div>
+    		<div class="posts">
+		    <a href="/config.html">Configuration</a>
+		</div>
+        	<div class="footer">
+            	    <div class="pure-menu pure-menu-horizontal">
+			<small>Made with &hearts; by Michele "O-Zone" Pinassi in Siena, Italy</small>
+                	<ul>
+                    	    <li class="pure-menu-item"><a href="https://www.zerozone.it" class="pure-menu-link">&#9900; blog on zerozone.it</a></li>
+                    	    <li class="pure-menu-item"><a href="https://github.com/michelep/" class="pure-menu-link">&#9900; code on Github</a></li>
+                    	    <li class="pure-menu-item"><a href="https://twitter.com/michele_pinassi" class="pure-menu-link">&#9900; follow me on Twitter</a></li>
+                	</ul>
+            	    </div>
+        	</div>
+    	    </div>
 	</div>
 	<script>
-function ajaxCall(act, field, result) {
-  $.ajax({
-    url: 'ajax',
-    type: 'post',
-    data: { action: act, value: field },
-    success: function(data) {
-	$(result).html(data);
-    }
-  });
-}
-
-function executeQuery(field, result) {
-  ajaxCall('get',field,result);
-  setTimeout(executeQuery, 5000, field, result);
+function ajaxCall(action, value) {
+    $.ajax({
+	url: 'ajax',
+        type: 'post',
+	data: { action: "env" },
+	dataType: 'json',
+	timeout : 1000,
+    }).fail(function(xhr, text, error) {
+	$('#status').html('FAILED ('+error+'): device is connected?');
+    }).done(function(data) {
+	$('#status').html(data.status);
+	$('#rt-temperature').html(data.temperature.toFixed(2)+'°C');
+	$('#rt-humidity').html(data.humidity.toFixed(2)+'%');
+	$('#rt-pressure').html(data.pressure.toFixed(2)+'kPa');
+	$('#rt-altitude').html(data.altitude.toFixed(2)+'mt');
+	if(data.vocs) {
+	    $('#rt-vocs').html(data.vocs.toFixed(2)+'ppm');
+	}
+	$('#rt-humidex').html(data.humidex.toFixed(2));
+    });
+    setTimeout(ajaxCall, 2000);
+    return false;
 }
 
 $(document).ready(function(){
-    executeQuery("temp","#temp_field");
-    executeQuery("humidity","#hum_field");
-    executeQuery("pressure","#pres_field");
-    executeQuery("co2","#co2_field");
-    executeQuery("humidex","#humidex_field");
-    executeQuery("altitude","#alt_field");
-    executeQuery("status","#status_field");
+    ajaxCall();
 });
 	</script>
     </body>
-    <footer class="footer">
-        <div class="container">
-	    <div class="row justify-content-md-center">
-    	        <div class="text-center">
-            	    <hr class="small">
-            	    <p class="small">by Michele &lt;o-zone@zerozone.it&gt; Pinassi - <a href="http://www.zerozone.it">zerozone.it</a></p>
-        	</div>
-            </div>
-        </div>
-    </footer>
 </html>
